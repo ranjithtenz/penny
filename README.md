@@ -120,8 +120,8 @@ This is only to give an illustration. Some proper usage info will come in time:
 Tests
 -----
 
-There *are* tests and they run nicely with "rake test". Coverage isn't 100%
-but the main snafus should be covered. E-book building is really a process
+There *are* tests and they run nicely with "rake test". Coverage isn't 100% yet
+but some key structural snafus are covered. E-book building is really a process
 that would benefit from *integration* tests and that's on my TODO.
 
 License
