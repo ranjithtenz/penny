@@ -96,9 +96,16 @@ This is only to give an illustration. Some proper usage info will come in time:
     end
     
     
+    # Generate an EPUB
+    # (behind the scenes this generates an HTML version of variant 'epub' and then processes
+    # the output and builds an EPUB file with EeePub)
+    book.build(Penny::EPUB)
+    
+    
     # Ugly example included for completeness
     # I no longer create .mobi or .epub files this way but it shows how you can "finish the job"
     # using other apps you have installed such as Amazon's 'kindlegen'
+    # This makes extremely customized workflows possible
     
     book.build(Penny::HTML, variant: 'kindle') do |b|
       `/Users/peter/Misc/kindlegen/kindlegen tmp/#{b.safe_title}.html -o #{b.safe_title}.mobi`
