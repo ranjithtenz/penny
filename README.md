@@ -7,17 +7,17 @@ e-book generator.
 Requirements
 -------------
 
-  Ruby 1.9.2+ (uses lots of Ruby 1.9 specific stuff so don't even try with 1.8 :-))
-  eeepub (for EPUB generation)
-  kramdown
+* Ruby 1.9.2+ (uses lots of Ruby 1.9 specific stuff so don't even try with 1.8 :-))
+* eeepub (for EPUB generation)
+* kramdown
   
 Bundler will install the gems for you, if you like.
 
 Install
 -------
 
-gem install penny
-bundle
+    gem install penny
+    bundle
 
 Explanation
 -----------
@@ -74,32 +74,34 @@ This is only to give an illustration. Some proper usage info will come in time:
         end
       end
     end
+    
   
     # Build a book with the HTML builder then do extra stuff like render a SASS
     # file and render a PDF using Prince (just use backticks and call your own
     # stuff if you want to do other things..)
     
-    book.build(Penny::HTML) do
-      sass              
-      render_pdf        
-    end
+      book.build(Penny::HTML) do
+        sass              
+        render_pdf        
+      end
     
     
     # Build a different variant using a different final HTML template (template.variant.html)
     # that uses an extra CSS file to tweak settings. We copy this over with copy_assets
     # in this case.
     
-    book.build(Penny::HTML, variant: 'landscape') do
-      sass
-      copy_assets("*.css")                        
-      render_pdf                              
-    end
-    
+      book.build(Penny::HTML, variant: 'landscape') do
+        sass
+        copy_assets("*.css")                        
+        render_pdf                              
+      end
+ 
     
     # Generate an EPUB
     # (behind the scenes this generates an HTML version of variant 'epub' and then processes
     # the output and builds an EPUB file with EeePub)
-    book.build(Penny::EPUB)
+    
+      book.build(Penny::EPUB)
     
     
     # Ugly example included for completeness
@@ -107,13 +109,13 @@ This is only to give an illustration. Some proper usage info will come in time:
     # using other apps you have installed such as Amazon's 'kindlegen'
     # This makes extremely customized workflows possible
     
-    book.build(Penny::HTML, variant: 'kindle') do |b|
-      `/Users/peter/Misc/kindlegen/kindlegen tmp/#{b.safe_title}.html -o #{b.safe_title}.mobi`
-      `cp tmp/#{b.safe_title}.mobi #{PKG_DIR}`
-      
-      # 'ebook-convert' is a part of the popular cross-platform Calibre e-book reader/converter
-      `ebook-convert pkg/#{b.safe_title}.mobi #{PKG_DIR}/#{b.safe_title}.epub`
-    end                                 
+      book.build(Penny::HTML, variant: 'kindle') do |b|
+        `/Users/peter/Misc/kindlegen/kindlegen tmp/#{b.safe_title}.html -o #{b.safe_title}.mobi`
+        `cp tmp/#{b.safe_title}.mobi #{PKG_DIR}`
+        
+        # 'ebook-convert' is a part of the popular cross-platform Calibre e-book reader/converter
+        `ebook-convert pkg/#{b.safe_title}.mobi #{PKG_DIR}/#{b.safe_title}.epub`
+      end                                 
 
 Tests
 -----
