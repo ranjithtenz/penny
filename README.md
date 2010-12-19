@@ -110,6 +110,8 @@ This is only to give an illustration. Some proper usage info will come in time:
     book.build(Penny::HTML, variant: 'kindle') do |b|
       `/Users/peter/Misc/kindlegen/kindlegen tmp/#{b.safe_title}.html -o #{b.safe_title}.mobi`
       `cp tmp/#{b.safe_title}.mobi #{PKG_DIR}`
+      
+      # 'ebook-convert' is a part of the popular cross-platform Calibre e-book reader/converter
       `ebook-convert pkg/#{b.safe_title}.mobi #{PKG_DIR}/#{b.safe_title}.epub`
     end                                 
 
