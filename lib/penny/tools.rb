@@ -1,5 +1,3 @@
-require 'fileutils'
-
 module Penny
   module Tools    
     def sass(from = 'book.scss', to = 'book.css', options = '--scss')

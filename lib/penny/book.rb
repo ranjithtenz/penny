@@ -27,6 +27,16 @@ module Penny
       end
     end
     
+    # Return a list of all files in the book's assets folder (i.e. content/assets/* recursive)
+    def asset_files
+      Find.find(ASSETS_ROOT).select { |i| File.file?(i) }.map { |i2| File.expand_path(i2) }
+    end
+    
+    # Return ALL files related to the book that would need to be packaged into, say, an EPUB file
+    def all_files
+      (asset_files + filelist).uniq
+    end
+    
     # Magic to set metadata info in a block passed when initializing the book
     def method_missing(m, *args)
       @metadata[m] = args.length == 1 ? args.first : args
@@ -53,13 +63,14 @@ module Penny
     
     # Render a PDF
     def render_pdf
-      `prince tmp/#{safe_title}.html -o pkg/#{safe_title}.pdf`
+      `prince tmp/#{safe_title}.html -o #{PKG_DIR}/#{safe_title}.pdf`
     end
         
     private
     def default_metadata
       {
         :year => Time.now.year,
+        :date => Time.now.strftime("%Y-%m-%d"),
         :edition => 1
       }
     end
