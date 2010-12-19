@@ -11,7 +11,7 @@ module Penny
     end
     
     def copy_assets(what = "*.css")
-      FileUtils.cp("#{CONTENT_ROOT}/#{what}", TEMP_DIR)
+      FileUtils.cp(Dir["#{CONTENT_ROOT}/#{what}"], TEMP_DIR)
     end
   end
 end

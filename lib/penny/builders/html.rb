@@ -4,7 +4,9 @@ module Penny
   class HTML < Builder
     module Helpers
       def figure(options)
-        %{<p class="figure"><img src="#{ASSETS_ROOT}/figures/#{options[:src]}" style="#{options[:style]}" /><cite>Fig <span class="figure-number"></span>.</cite> #{options[:description]}</p>}
+        @state[:figure] ||= 0
+        @state[:figure] += 1
+        %{<p class="figure"><img src="#{ASSETS_ROOT}/#{options[:src]}" style="#{options[:style]}" /><cite>Fig <span class="figure-number">#{@item[:chapter]}.#{@state[:figure]}</span>.</cite> #{options[:description]}</p>}
       end
       
       def divider(klass)
@@ -12,23 +14,23 @@ module Penny
       end
       
       def breakout
-        %{<div class="breakout">} + yield + %{</div>}
+        %{<blockquote class="breakout">} + yield + %{</blockquote>}
+      end
+      
+      def last_figure
+        %{<span class="last_figure">#{@item[:chapter]}.#{@state[:figure]}</span>}
+      end
+      
+      def chapter
+        @item[:chapter]
       end
     end
     
-    def render_item(item)
-      content = item[:content]
-      
-      content.gsub!(/\{\{(\S+?)\}\}/) do
-        %{<span class="#{$1}"></span>}
-      end
-      
-      content.gsub!(/\[\[(\S+?)\]\]/) do
-        %{<div class="#{$1}"></div>}
-      end
+    def render_item
+      @state = {}
       
       # Parse with ERB
-      ERB.new(content, nil, nil, "@output").result(binding)
+      ERB.new(@item[:content], nil, nil, "@output").result(binding)
       
       # Parse with Kramdown
       content = Kramdown::Document.new(@output).to_html
@@ -37,12 +39,31 @@ module Penny
         %{(<a href="#{$1}">#{$1}</a>)}
       end
       
-      %{<div class="#{item[:types].join(' ')}" id="#{item[:types].last}-#{item[:counter]}">} + content + %{</div>\n\n}
+      %{<div class="#{@item[:types].join(' ')}" id="#{@item[:types].last}-#{@item[:counter]}">} + content + %{</div>\n\n}
     end
     
-    def before_build
+    def package_build
+      content = ''
+      
+      # Do individual files
+      @book.contents.each do |item|
+        output_filename = File.join(TEMP_DIR, @book.safe_title + "-" + item[:name] + ".html")
+        @book.filelist << output_filename
+        item[:rendered_file] = output_filename
+        
+        content += item[:rendered_content]
+        
+        File.open(output_filename, "w") do |f|
+          f.puts item[:rendered_content]
+        end
+      end
+      
+      # Do full page template
+      File.open(File.join(TEMP_DIR, @book.safe_title + ".html"), "w") do |f|
+        f.puts ERB.new(File.read(template_file(@options[:variant]))).result(binding)
+      end
     end
     
-    include Helpers  
+    include Helpers
   end
 end

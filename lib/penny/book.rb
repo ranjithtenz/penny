@@ -1,12 +1,17 @@
 module Penny
   class Book
-    attr_accessor :metadata
+    attr_accessor :metadata, :filelist
     include Penny::Tools
     
     # Create a book object
     def initialize(&block)
       @metadata = default_metadata
+      @filelist = []
+      
       instance_eval &block
+      
+      raise "No title" unless @metadata[:title]
+      
       unless @metadata[:identifier]
         # Unique identifier is the title + edition
         @metadata[:identifier] = "#{metadata[:title].gsub(/[^\w]/, '')}-#{@metadata[:edition]}"
@@ -31,9 +36,9 @@ module Penny
     def build(builder, options = {}, &block)
       raise "No contents" unless contents
       @options = options
-      @builder = builder.new
+      @builder = builder.new(self, options)
       
-      @builder.build(self, options)
+      @builder.build
       
       if block_given?
         instance_exec self, &block
@@ -75,7 +80,7 @@ module Penny
       def inspect
         @tree.inspect
       end
-
+      
       def method_missing(m, *args)
         @saved ||= []
         
@@ -87,7 +92,7 @@ module Penny
         else
           # Is this a top level setting? If so, easy peasy
           if @saved.empty?
-            item_header = m
+            item_header = [m]
           else
             # If this setting is nested note all of the previous branches in the tree
             item_header = [m] + @saved.dup.map(&:first).reverse
@@ -98,9 +103,10 @@ module Penny
 
           # Blend arguments from previous branches with later ones giving priority to more "senior" arguments
           extra_args = {}
+        
           other_args.each do |e|
             extra_args.merge!(e) if e.is_a?(Hash)
-          end
+          end if other_args
 
           # Take the extra args and blend them in, giving seniority to more "senior" arguments
           args = args.first.merge(extra_args)
@@ -133,6 +139,11 @@ module Penny
               item[:chapter] = @state[:appendix].dup
               @state[:appendix].succ!
             end          
+          end
+          
+          # Find full filename for name
+          if item[:name]
+            item[:content_file] = File.expand_path(Dir[File.join(CONTENT_ROOT, item[:name] + '*')].sort_by(&:length).first) rescue nil
           end
 
           # Add the item to the contents tree

@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Peter Cooper"]
   s.email       = ["peter@petercooper.co.uk"]
-  s.homepage    = ""
+  s.homepage    = "https://github.com/peterc/penny"
   s.summary     = %q{Multi-format e-book generation system}
   s.description = %q{Penny is a flexible e-book generation system for working with multiple toolchains and compilation flows}
 
@@ -18,4 +18,7 @@ Gem::Specification.new do |s|
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
+  
+  s.add_dependency 'kramdown' 
+  s.add_dependency 'eeepub'
 end
