@@ -44,6 +44,7 @@ module Penny
     
     def package_build
       content = ''
+      @book.filelist.clear
       
       # Do individual files
       @book.contents.each do |item|
